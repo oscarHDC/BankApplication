@@ -68,13 +68,29 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+/* THIS METHOD CREATES THE USERNAMES FOR THE USERS */
+/* The user name is formed by the 1st char of its name and usernames */
+const createUserName = function (accs) {
+  accs.forEach(function (user) {
+    //Getting the 1st chars'name and chars'usernames of each user
+    const username = user.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name.charAt(0))
+      .join('');
+    user.userName = username; //Assign the userName to the object user
+  });
+};
+
+createUserName(accounts);
+
+/* THIS METHOD ADD THE MOVEMENTS OF THE USER TO THE MOVEMENT'S CONTAINER */
 const displayMovements = function (movements) {
-  containerMovements.innerHTML = ''; //It clear the movement container
+  containerMovements.innerHTML = ''; //It clears the movement container
 
   movements.forEach(function (mov, i) {
     //Looping the movements of the user
-    //Getting the value and the index
-    const type = mov > 0 ? 'deposit' : 'withdrawal'; //Depending on the value, the CSS class will be different
+    const type = mov > 0 ? 'deposit' : 'withdrawal'; //Depending on the value, the CSS class will be different(deposit is green, and withdrawl is red)
 
     //Creating the html movement element
     const html = `<div class="movements__row"> 
