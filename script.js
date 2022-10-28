@@ -68,7 +68,37 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/* THIS METHOD CREATES THE USERNAMES FOR THE USERS */
+/* -------------------THIS METHOD CALCULATES THE BALANCE OF THE MOVEMENTS AND PRINT IT IN THE BALANCE LABEL ---------------  */
+const calcDisplaySummary = function (movement) {
+  const inMovs = movement
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov);
+  labelSumIn.textContent = `${inMovs}$`;
+
+  const outMovs = movement
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(outMovs)}$`;
+
+  const interest = movement
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter(deposit => deposit > 1)
+    .reduce((acc, int) => acc + int);
+  labelSumInterest.textContent = interest;
+};
+
+calcDisplaySummary(account1.movements);
+
+/* -------------------THIS METHOD CALCULATES THE BALANCE OF THE MOVEMENTS AND PRINT IT IN THE BALANCE LABEL ---------------  */
+const calcPrintBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+
+calcPrintBalance(account1.movements);
+
+/*-------------------THIS METHOD CREATES THE USERNAMES FOR THE USERS -------------------*/
 /* The user name is formed by the 1st char of its name and usernames */
 const createUserName = function (accs) {
   accs.forEach(function (user) {
@@ -84,7 +114,7 @@ const createUserName = function (accs) {
 
 createUserName(accounts);
 
-/* THIS METHOD ADD THE MOVEMENTS OF THE USER TO THE MOVEMENT'S CONTAINER */
+/*------------------- THIS METHOD ADD THE MOVEMENTS OF THE USER TO THE MOVEMENT'S CONTAINER------------------- */
 const displayMovements = function (movements) {
   containerMovements.innerHTML = ''; //It clears the movement container
 
