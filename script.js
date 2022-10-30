@@ -68,35 +68,63 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/* -------------------THIS METHOD CALCULATES THE BALANCE OF THE MOVEMENTS AND PRINT IT IN THE BALANCE LABEL ---------------  */
-const calcDisplaySummary = function (movement) {
-  const inMovs = movement
+/* ------------------ LOG IN ----------------- */
+let currentAccount;
+btnLogin.addEventListener('click', function (event) {
+  //Prevent form from submitting
+  event.preventDefault();
+
+  const currentAccount = accounts.find(
+    owner => owner.userName === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //If property pin exists(it means that account isnt undefined)
+    //Display UI and message
+    labelWelcome.textContent = `Welcome back ${
+      currentAccount.owner //Taking only the name of the owner
+        .split(' ')[0]
+    }`;
+    containerApp.style.opacity = 100; //Making the app form fade in
+
+    //Clear the input fields
+    inputLoginPin.value = inputLoginUsername.value = '';
+    inputLoginPin.blur(); //Getting ride of the focus with style
+
+    //Display movement
+    displayMovements(currentAccount.movements);
+    //Display balance
+    calcPrintBalance(currentAccount.movements);
+    //Display summary
+    calcDisplaySummary(currentAccount);
+  }
+});
+
+/* -------------------THIS METHOD PRINT IN THE RESPECTIVE LABEL THE DEPOSITS, WITHDRAWS AND INTEREST---------------  */
+const calcDisplaySummary = function (acc) {
+  const inMovs = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov);
   labelSumIn.textContent = `${inMovs}$`;
 
-  const outMovs = movement
+  const outMovs = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(outMovs)}$`;
 
-  const interest = movement
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * 1.2) / 100)
+    .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(deposit => deposit > 1)
     .reduce((acc, int) => acc + int);
-  labelSumInterest.textContent = interest;
+  labelSumInterest.textContent = `${interest}$`;
 };
-
-calcDisplaySummary(account1.movements);
 
 /* -------------------THIS METHOD CALCULATES THE BALANCE OF THE MOVEMENTS AND PRINT IT IN THE BALANCE LABEL ---------------  */
 const calcPrintBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance}$`;
 };
-
-calcPrintBalance(account1.movements);
 
 /*-------------------THIS METHOD CREATES THE USERNAMES FOR THE USERS -------------------*/
 /* The user name is formed by the 1st char of its name and usernames */
@@ -127,11 +155,9 @@ const displayMovements = function (movements) {
           <div class="movements__type movements__type--${type}">${
       i + 1
     } deposit</div>
-          <div class="movements__value">${mov}</div>
+          <div class="movements__value">${mov}$</div>
         </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html); //afterbegin stablish in which order the html will be add
   });
 };
-
-displayMovements(account1.movements);
