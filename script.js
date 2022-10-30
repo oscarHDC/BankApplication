@@ -68,38 +68,6 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/* ------------------ LOG IN ----------------- */
-let currentAccount;
-btnLogin.addEventListener('click', function (event) {
-  //Prevent form from submitting
-  event.preventDefault();
-
-  const currentAccount = accounts.find(
-    owner => owner.userName === inputLoginUsername.value
-  );
-
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
-    //If property pin exists(it means that account isnt undefined)
-    //Display UI and message
-    labelWelcome.textContent = `Welcome back ${
-      currentAccount.owner //Taking only the name of the owner
-        .split(' ')[0]
-    }`;
-    containerApp.style.opacity = 100; //Making the app form fade in
-
-    //Clear the input fields
-    inputLoginPin.value = inputLoginUsername.value = '';
-    inputLoginPin.blur(); //Getting ride of the focus with style
-
-    //Display movement
-    displayMovements(currentAccount.movements);
-    //Display balance
-    calcPrintBalance(currentAccount.movements);
-    //Display summary
-    calcDisplaySummary(currentAccount);
-  }
-});
-
 /* -------------------THIS METHOD PRINT IN THE RESPECTIVE LABEL THE DEPOSITS, WITHDRAWS AND INTEREST---------------  */
 const calcDisplaySummary = function (acc) {
   const inMovs = acc.movements
@@ -121,9 +89,9 @@ const calcDisplaySummary = function (acc) {
 };
 
 /* -------------------THIS METHOD CALCULATES THE BALANCE OF THE MOVEMENTS AND PRINT IT IN THE BALANCE LABEL ---------------  */
-const calcPrintBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance}$`;
+const calcPrintBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0); //Creating the balance of the user in order to can do transfers
+  labelBalance.textContent = `${acc.balance}$`;
 };
 
 /*-------------------THIS METHOD CREATES THE USERNAMES FOR THE USERS -------------------*/
@@ -161,3 +129,61 @@ const displayMovements = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html); //afterbegin stablish in which order the html will be add
   });
 };
+
+const updateUI = function (acc) {
+  //Display movement
+  displayMovements(acc.movements);
+  //Display balance
+  calcPrintBalance(acc);
+  //Display summary
+  calcDisplaySummary(acc);
+};
+/* ------------------ LOG IN ----------------- */
+let currentAccount;
+btnLogin.addEventListener('click', function (event) {
+  //Prevent form from submitting
+  event.preventDefault();
+
+  currentAccount = accounts.find(
+    owner => owner.userName === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    console.log(currentAccount);
+    //If property pin exists(it means that account isnt undefined)
+    //Display UI and message
+    labelWelcome.textContent = `Welcome back ${
+      currentAccount.owner //Taking only the name of the owner
+        .split(' ')[0]
+    }`;
+    containerApp.style.opacity = 100; //Making the app form fade in
+
+    //Clear the input fields
+    inputLoginPin.value = inputLoginUsername.value = '';
+    inputLoginPin.blur(); //Getting ride of the focus with style
+
+    updateUI(currentAccount);
+  }
+});
+
+/* ------------------ TRANSFERS FUNCIONALITY ---------------- */
+btnTransfer.addEventListener('click', function (ev) {
+  ev.preventDefault(); //Preventing the suubmit behaviour
+  const amount = Number(inputTransferAmount.value);
+  const receiver = accounts.find(acc => acc.userName === inputTransferTo.value);
+  //Cleaning inputs
+  inputTransferAmount.value = inputTransferTo.value = '';
+  if (
+    amount > 0 &&
+    receiver &&
+    amount <= currentAccount.balance &&
+    receiver?.userName !== currentAccount.userName
+  ) {
+    //Doing transfer
+    receiver.movements.push(amount);
+    currentAccount.movements.push(-amount);
+    //Upload the current account info
+    updateUI(currentAccount);
+    console.log(currentAccount);
+  }
+});
