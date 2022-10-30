@@ -184,6 +184,27 @@ btnTransfer.addEventListener('click', function (ev) {
     currentAccount.movements.push(-amount);
     //Upload the current account info
     updateUI(currentAccount);
-    console.log(currentAccount);
+  }
+});
+
+/* ------------- DELETE ACCOUNT FUNCIONALITY -------------- */
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  if (
+    currentAccount.userName === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      //Getting the index of the account
+      acc => acc.userName === inputCloseUsername.value
+    );
+
+    //Delete account
+    accounts.splice(index, 1);
+    //Hide UI
+    containerApp.style.opacity = 0;
+    //Cleaning inputs
+    inputClosePin.value = inputCloseUsername.value = '';
   }
 });
