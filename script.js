@@ -68,6 +68,8 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+/* -------------------SORT MOVEMENTS---------------  */
+
 /* -------------------THIS METHOD PRINT IN THE RESPECTIVE LABEL THE DEPOSITS, WITHDRAWS AND INTEREST---------------  */
 const calcDisplaySummary = function (acc) {
   const inMovs = acc.movements
@@ -111,10 +113,12 @@ const createUserName = function (accs) {
 createUserName(accounts);
 
 /*------------------- THIS METHOD ADD THE MOVEMENTS OF THE USER TO THE MOVEMENT'S CONTAINER------------------- */
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements; //In order to sort the movements
+
   containerMovements.innerHTML = ''; //It clears the movement container
 
-  movements.forEach(function (mov, i) {
+  movs.forEach(function (mov, i) {
     //Looping the movements of the user
     const type = mov > 0 ? 'deposit' : 'withdrawal'; //Depending on the value, the CSS class will be different(deposit is green, and withdrawl is red)
 
@@ -187,6 +191,23 @@ btnTransfer.addEventListener('click', function (ev) {
   }
 });
 
+/* ------------- LOAN FUNCIONALITY -------------- */
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    //Condition to get a Loan
+    //Adding movement
+    currentAccount.movements.push(amount);
+
+    //Updating UI
+    updateUI(currentAccount);
+
+    inputLoanAmount.value = '';
+  }
+});
+
 /* ------------- DELETE ACCOUNT FUNCIONALITY -------------- */
 
 btnClose.addEventListener('click', function (e) {
@@ -207,4 +228,12 @@ btnClose.addEventListener('click', function (e) {
     //Cleaning inputs
     inputClosePin.value = inputCloseUsername.value = '';
   }
+});
+
+/* ------------- SORT FUNCIONALITY -------------- */
+let sortStage = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sortStage); //In roder to get back to unsort movements
+  sortStage = !sortStage;
 });
