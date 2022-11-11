@@ -8,9 +8,5 @@ In order to check this app you have to take a look to the code. Usernames are fo
 
           JD             2222
 
-          STW            3333
-
-          SS             4444
-
-
+     
 https://joyful-meringue-939a5e.netlify.app
