@@ -160,11 +160,36 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, '0');
+    const sec = String(time % 60).padStart(2, '0');
+    //In each call, print the remaining time
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = 0; //Making the app form fade in
+    }
+    time--;
+  };
+
+  //Set time out to 5min
+  let time = 300;
+  //Call the timer every second
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+//When 0 second, stop timer and log out
+
 ////////////////////////////////////////////
-let currentAccount;
-currentAccount = account1;
+let currentAccount, timer;
+/* currentAccount = account1;
 updateUI(currentAccount);
-containerApp.style.opacity = 100;
+containerApp.style.opacity = 100; */
 
 const now = new Date();
 const day = `${now.getDate()}`.padStart(2, 0);
@@ -199,6 +224,10 @@ btnLogin.addEventListener('click', function (event) {
     inputLoginPin.value = inputLoginUsername.value = '';
     inputLoginPin.blur(); //Getting ride of the focus with style
 
+    //Timer
+    if (timer) clearInterval(timer); //If a timer exists of other account, it removes it
+    timer = startLogOutTimer();
+
     updateUI(currentAccount);
   }
 });
@@ -225,6 +254,10 @@ btnTransfer.addEventListener('click', function (ev) {
     receiver.movementsDates.push(new Date().toISOString());
     //Upload the current account info
     updateUI(currentAccount);
+
+    //Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -245,11 +278,14 @@ btnLoan.addEventListener('click', function (e) {
     updateUI(currentAccount);
 
     inputLoanAmount.value = '';
+
+    //Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
 /* ------------- DELETE ACCOUNT FUNCIONALITY -------------- */
-
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
   if (
