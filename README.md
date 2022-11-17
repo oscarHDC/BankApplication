@@ -1,6 +1,15 @@
 # BankApplication
 Program that simulates a bank application, coded with JS, HTML and CSS.
-In order to check this app you have to take a look to the code. Usernames are formed by the first letter of the name and secondname(s).
+
+
+
+
+
+![image](https://user-images.githubusercontent.com/101225451/202452449-49c4a55f-84a8-4472-a71d-2c9246e9c297.png)
+
+
+
+TEST USERS:
 
         Username        Password
         
